@@ -1,5 +1,6 @@
 package main
 
+import "github.com/mosliu/gowalkwindow/ui"
 
 // 使用icon？
 //Tool for embedding .ico & manifest resources in Go programs for Windows.
@@ -7,6 +8,6 @@ package main
 
 func main() {
     //test()
-    showWindow()
+    ui.ShowMainApp()
 }
 

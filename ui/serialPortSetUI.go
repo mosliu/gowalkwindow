@@ -3,12 +3,11 @@
 // license that can be found in the LICENSE file.
 
 
-package main
+package ui
 
 import (
     "github.com/lxn/walk"
     . "github.com/lxn/walk/declarative"
-    "log"
     "strconv"
 )
 
