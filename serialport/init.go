@@ -5,5 +5,9 @@ import (
 )
 
 var log = logs.Log.WithFields(logrus.Fields{
-    "pkg":"libs",
+    "pkg":"serialport",
+})
+
+var logf = logs.Log.WithFields(logrus.Fields{
+    "pkg":"serialport",
 })

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"github.com/mosliu/gowalkwindow/logs"
@@ -6,5 +6,9 @@ import (
 )
 
 var log = logs.Log.WithFields(logrus.Fields{
-	"pkg": "main",
+	"pkg": "handlers",
+})
+
+var logf = logs.Log.WithFields(logrus.Fields{
+	"pkg": "handlers",
 })
