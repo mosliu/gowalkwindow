@@ -1,361 +1,432 @@
 package ui
 
 import (
-	"fmt"
-	"github.com/lxn/walk"
-	"github.com/mosliu/gowalkwindow/serialport"
-	"github.com/tarm/serial"
+    "fmt"
+    "github.com/fatih/color"
+    "github.com/lxn/walk"
+    "github.com/mosliu/gowalkwindow/bind"
+    "github.com/mosliu/gowalkwindow/mq"
+    "github.com/mosliu/gowalkwindow/serialport"
+    "github.com/tarm/serial"
+    "time"
 )
 import . "github.com/lxn/walk/declarative"
 
 type AppWindow struct {
-	*walk.MainWindow
-	recentMenu                   *walk.Menu
-	outPutTextEdit               *walk.TextEdit
-	btnOpenPort, btnFetchVersion *walk.PushButton
-	versionShowLineEdit          *walk.LineEdit
-	//status bar items
-	currentPort serialport.CommPort
+    *walk.MainWindow
+    recentMenu                   *walk.Menu
+    outPutTextEdit               *walk.TextEdit
+    btnOpenPort, btnFetchVersion *walk.PushButton
+    versionShowLineEdit          *walk.LineEdit
+    //status bar items
+    currentPort serialport.CommPort
 }
 
 var defaultPortConfig = serial.Config{
-	Name:     "COM1",
-	Baud:     9600,
-	Parity:   serial.ParityNone,
-	StopBits: serial.Stop1,
+    Name:     "COM1",
+    Baud:     9600,
+    Parity:   serial.ParityNone,
+    StopBits: serial.Stop1,
 }
 
-var Appw = AppWindow{
-	//当前串口配置信息
-	currentPort: serialport.CommPort{
-		Config: &defaultPortConfig,
-	},
+var appw = AppWindow{
+    //当前串口配置信息
+    currentPort: serialport.CommPort{
+        Config: &defaultPortConfig,
+    },
 }
 
 //Draw UI
 func ShowMainApp() {
-	log.Debugln("Show Main Window")
-	//Appw := new(AppWindow)
-	var btn *walk.PushButton
-	//菜单项
-	var openAction, showAboutBoxAction, setupAction *walk.Action
-	//var recentMenu *walk.Menu
+    log.Debugln("Show Main Window")
+    //appw := new(AppWindow)
+    var btn *walk.PushButton
+    //菜单项
+    var openAction, showAboutBoxAction, setupAction *walk.Action
+    //var recentMenu *walk.Menu
 
-	//图标
-	//iconPortSet, err := walk.NewIconFromFile("./assets/icons/setport.ico")
-	//if err != nil {
-	//    log.Fatal(err)
-	//}
+    //图标
+    //iconPortSet, err := walk.NewIconFromFile("./assets/icons/setport.ico")
+    //if err != nil {
+    //    log.Fatal(err)
+    //}
+    // 释放所有打包文件到临时文件夹中
+    bind.ExtractCurr()
 
-	icon1, err := walk.NewIconFromFile("./assets/imgs/check.ico")
-	if err != nil {
-		logf.Fatal(err)
-	}
-	icon2, err := walk.NewIconFromFile("./assets/imgs/stop.ico")
-	if err != nil {
-		logf.Fatal(err)
-	}
-	var sbi *walk.StatusBarItem
-	err = MainWindow{
-		AssignTo: &Appw.MainWindow,
-		Name:     "haliluya",
-		Title:    "兰光版本号下位机读取工具",
-		MinSize:  Size{800, 600},
-		//渐变色背景
-		Background: GradientBrush{
-			//定义点 0-4 5个点 分别在左上 右上 正中 右下 左下
-			Vertexes: []walk.GradientVertex{
-				{X: 0, Y: 0, Color: walk.RGB(255, 255, 127)},
-				{X: 1, Y: 0, Color: walk.RGB(127, 191, 255)},
-				{X: 0.5, Y: 0.5, Color: walk.RGB(255, 255, 255)},
-				{X: 1, Y: 1, Color: walk.RGB(127, 255, 127)},
-				{X: 0, Y: 1, Color: walk.RGB(255, 127, 127)},
-			},
-			//使用上面定义的点，绘制渐变三角形
-			Triangles: []walk.GradientTriangle{
-				{0, 1, 2},
-				{1, 3, 2},
-				{3, 4, 2},
-				{4, 0, 2},
-			},
-		},
-		Layout: VBox{
-			MarginsZero: true,
-		},
-		MenuItems: []MenuItem{
-			Menu{
-				Text: "&File",
-				Items: []MenuItem{
-					Action{
-						AssignTo:    &openAction,
-						Text:        "&Open",
-						Image:       "./assets/imgs/open.png",
-						Enabled:     Bind("enabledCB.Checked"),
-						Visible:     Bind("!openHiddenCB.Checked"),
-						Shortcut:    Shortcut{walk.ModControl, walk.KeyO},
-						OnTriggered: Appw.openAction_Triggered,
-					},
-					Menu{
-						AssignTo: &Appw.recentMenu,
-						Text:     "Recent",
-					},
-					Separator{},
-					Action{
-						Text:        "E&xit",
-						OnTriggered: func() { Appw.Close() },
-					},
-				},
-			},
-			Menu{
-				Text: "&Setup",
-				Items: []MenuItem{
-					Action{
-						Image:       "./assets/icons/setport.ico",
-						AssignTo:    &setupAction,
-						Text:        "Setup",
-						OnTriggered: Appw.setupAction_Triggered,
-					},
-				},
-			},
-			Menu{
-				Text: "&Help",
-				Items: []MenuItem{
-					Action{
-						AssignTo:    &showAboutBoxAction,
-						Text:        "About",
-						OnTriggered: Appw.showAboutBoxAction_Triggered,
-					},
-				},
-			},
-		},
-		StatusBarItems: []StatusBarItem{
-			StatusBarItem{
-				AssignTo: &sbi,
-				Icon:     icon1,
-				Text:     "click",
-				Width:    80,
-				OnClicked: func() {
-					if sbi.Text() == "click" {
-						sbi.SetText("again")
-						sbi.SetIcon(icon2)
-					} else {
-						sbi.SetText("click")
-						sbi.SetIcon(icon1)
-					}
-				},
-			},
-			StatusBarItem{
-				Text:        "left",
-				ToolTipText: "no tooltip for me",
-			},
-			StatusBarItem{
-				Text: "\tcenter",
-			},
-			StatusBarItem{
-				Text: "\t\tright",
-			},
-			StatusBarItem{
-				Icon:        icon1,
-				ToolTipText: "An icon with a tooltip",
-			},
-		},
-		Children: []Widget{
-			VSpacer{},
-			//主区域
-			Composite{
-				Layout: HBox{},
-				Children: []Widget{
-					Composite{
-						MinSize: Size{Width: 250},
-						Layout:  Grid{Columns: 2},
-						Children: []Widget{
-							VSpacer{ColumnSpan: 2},
-							PushButton{
-								Text:     "打开串口",
-								AssignTo: &Appw.btnOpenPort,
-								OnClicked: func() {
-									btnOpenPortClicked(Appw.btnOpenPort)
-								},
-							},
-							PushButton{
-								Text:     "获取版本",
-								AssignTo: &Appw.btnFetchVersion,
-								OnClicked: func() {
-									btnFetchVersionClicked(Appw.btnFetchVersion)
-								},
-							},
-							VSpacer{ColumnSpan: 2},
-							LineEdit{
-								Font:       Font{PointSize: 20},
-								AssignTo:   &Appw.versionShowLineEdit,
-								Text:       "Versions：",
-								ColumnSpan: 2,
-								ReadOnly:   true,
-							},
-							VSpacer{ColumnSpan: 2},
-						},
-					},
-					HSplitter{},
-					Composite{
-						MinSize: Size{Width: 550},
-						Layout:  VBox{},
-						Children: []Widget{
-							TextEdit{
-								AssignTo: &Appw.outPutTextEdit,
-								Text:     "",
-							},
-							PushButton{
-								Text:     "push me",
-								AssignTo: &btn,
-								OnClicked: func() {
-									btnClicked(btn)
-								},
-							},
-							Label{
-								Text: "点击按钮后，可拖动标题栏测试界面状态。",
-							},
-						},
-					},
-				},
-			},
 
-			VSpacer{},
-		},
-	}.Create()
-	if err != nil {
-		log.Fatal(err)
-	}
-	Appw.addRecentFileActions("Foo", "Bar", "Baz")
-	Appw.Run()
+    //icon1, err := walk.NewIconFromFile(filepath.Join(tempdir, "assets/imgs/check.ico"))
+    icon1, err := walk.NewIconFromFile(bind.GetTempFilePath("assets/imgs/check.ico"))
+    if err != nil {
+        logf.Fatal(err)
+    }
+    icon2, err := walk.NewIconFromFile(bind.GetTempFilePath("assets/imgs/stop.ico"))
+    if err != nil {
+        logf.Fatal(err)
+    }
+    var sbi *walk.StatusBarItem
+    err = MainWindow{
+        AssignTo: &appw.MainWindow,
+        Name:     "haliluya",
+        Title:    "兰光版本号下位机读取工具",
+        MinSize:  Size{800, 600},
+        //渐变色背景
+        Background: GradientBrush{
+            //定义点 0-4 5个点 分别在左上 右上 正中 右下 左下
+            Vertexes: []walk.GradientVertex{
+                {X: 0, Y: 0, Color: walk.RGB(255, 255, 127)},
+                {X: 1, Y: 0, Color: walk.RGB(127, 191, 255)},
+                {X: 0.5, Y: 0.5, Color: walk.RGB(255, 255, 255)},
+                {X: 1, Y: 1, Color: walk.RGB(127, 255, 127)},
+                {X: 0, Y: 1, Color: walk.RGB(255, 127, 127)},
+            },
+            //使用上面定义的点，绘制渐变三角形
+            Triangles: []walk.GradientTriangle{
+                {0, 1, 2},
+                {1, 3, 2},
+                {3, 4, 2},
+                {4, 0, 2},
+            },
+        },
+        Layout: VBox{
+            MarginsZero: true,
+        },
+        MenuItems: []MenuItem{
+            Menu{
+                Text: "&File",
+                Items: []MenuItem{
+                    Action{
+                        AssignTo: &openAction,
+                        Text:     "&Open",
+                        Image:       "rsrc/assets/imgs/open.png",
+                        //Image:       "./assets/imgs/open.png",
+                        Enabled:     Bind("enabledCB.Checked"),
+                        Visible:     Bind("!openHiddenCB.Checked"),
+                        Shortcut:    Shortcut{walk.ModControl, walk.KeyO},
+                        OnTriggered: appw.openAction_Triggered,
+                    },
+                    Menu{
+                        AssignTo: &appw.recentMenu,
+                        Text:     "Recent",
+                    },
+                    Separator{},
+                    Action{
+                        Text:        "E&xit",
+                        OnTriggered: func() { appw.Close() },
+                    },
+                },
+            },
+            Menu{
+                Text: "&Setup",
+                Items: []MenuItem{
+                    Action{
+                        //Image:       filepath.Join(tempdir, "assets/icons/setport.ico"),
+                        Image:       "rsrc/assets/icons/setport.ico",
+                        AssignTo:    &setupAction,
+                        Text:        "Setup",
+                        OnTriggered: appw.setupAction_Triggered,
+                    },
+                },
+            },
+            Menu{
+                Text: "&Help",
+                Items: []MenuItem{
+                    Action{
+                        AssignTo:    &showAboutBoxAction,
+                        Text:        "About",
+                        OnTriggered: appw.showAboutBoxAction_Triggered,
+                    },
+                },
+            },
+        },
+        StatusBarItems: []StatusBarItem{
+            StatusBarItem{
+                AssignTo: &sbi,
+                Icon:     icon1,
+                Text:     "click",
+                Width:    80,
+                OnClicked: func() {
+                    if sbi.Text() == "click" {
+                        sbi.SetText("again")
+                        sbi.SetIcon(icon2)
+                    } else {
+                        sbi.SetText("click")
+                        sbi.SetIcon(icon1)
+                    }
+                },
+            },
+            StatusBarItem{
+                Text:        "left",
+                ToolTipText: "no tooltip for me",
+            },
+            StatusBarItem{
+                Text: "\tcenter",
+            },
+            StatusBarItem{
+                Text: "\t\tright",
+            },
+            StatusBarItem{
+                Icon:        icon1,
+                ToolTipText: "An icon with a tooltip",
+            },
+        },
+        Children: []Widget{
+            VSpacer{},
+            //主区域
+            Composite{
+                Layout: HBox{},
+                Children: []Widget{
+                    Composite{
+                        MinSize: Size{Width: 250},
+                        Layout:  Grid{Columns: 2},
+                        Children: []Widget{
+                            VSpacer{ColumnSpan: 2},
+                            PushButton{
+                                Text:     "打开串口",
+                                AssignTo: &appw.btnOpenPort,
+                                OnClicked: func() {
+                                    btnOpenPortClicked(appw.btnOpenPort)
+                                },
+                            },
+                            PushButton{
+                                Text:     "获取版本",
+                                AssignTo: &appw.btnFetchVersion,
+                                OnClicked: func() {
+                                    btnFetchVersionClicked(appw.btnFetchVersion)
+                                },
+                                Enabled: false,
+                            },
+                            VSpacer{ColumnSpan: 2},
+                            LineEdit{
+                                Font:       Font{PointSize: 20},
+                                AssignTo:   &appw.versionShowLineEdit,
+                                Text:       "Versions：",
+                                ColumnSpan: 2,
+                                ReadOnly:   true,
+                            },
+                            VSpacer{ColumnSpan: 2},
+                        },
+                    },
+                    HSplitter{},
+                    Composite{
+                        MinSize: Size{Width: 550},
+                        Layout:  VBox{},
+                        Children: []Widget{
+                            TextEdit{
+                                AssignTo: &appw.outPutTextEdit,
+                                Text:     "",
+                            },
+                            PushButton{
+                                Text:     "push me",
+                                AssignTo: &btn,
+                                OnClicked: func() {
+                                    btnClicked(btn)
+                                },
+                            },
+                            Label{
+                                Text: "点击按钮后，可拖动标题栏测试界面状态。",
+                            },
+                        },
+                    },
+                },
+            },
+
+            VSpacer{},
+        },
+    }.Create()
+    if err != nil {
+        log.Fatal(err)
+    }
+    appw.addRecentFileActions("Foo", "Bar", "Baz")
+    go appw.subscribeMessageQuene()
+    appw.Run()
+
 }
 
 func btnClicked(btn *walk.PushButton) {
-	btn.SetText("哈哈")
-	//start("COM1")
+    btn.SetText("哈哈")
+    //start("COM1")
 }
 
 //打开串口按钮
 func btnOpenPortClicked(btn *walk.PushButton) {
 
-	if btn.Text() == "打开串口" {
-		btn.SetText("关闭串口")
-		openSerialPort()
-	} else {
-		btn.SetText("打开串口")
-		closeSerialPort()
-	}
-	//start("COM1")
+    if btn.Text() == "打开串口" {
+        btn.SetText("关闭串口")
+        openSerialPort()
+    } else {
+        btn.SetText("打开串口")
+        closeSerialPort()
+    }
+    //start("COM1")
 }
 
 //关闭串口
 func closeSerialPort() {
-	Appw.DisplayInfo("Closing SerialPort...")
-	err := Appw.currentPort.ClosePort()
-	if err != nil {
-		Appw.DisplayInfo("\r\nSerialPort %v close failed.error:%v", Appw.currentPort.Config.Name, err)
-	}
-	Appw.DisplayInfo("\r\nSerialPort %v Closed.", Appw.currentPort.Config.Name)
+    stopFetchVersion()
+    appw.btnFetchVersion.SetEnabled(false)
+    appw.DisplayInfoln("Closing SerialPort...")
+    err := appw.currentPort.ClosePort()
+    if err != nil {
+        appw.DisplayInfoln("SerialPort %v close failed.error:%v", appw.currentPort.Config.Name, err)
+    }
+    appw.DisplayInfoln("SerialPort %v Closed.", appw.currentPort.Config.Name)
 }
 
 //打开串口
 func openSerialPort() {
-	// 这里使用 log.Debugf的办法 会导致无法显示。很奇怪。
-	// 先用fmt.SPrintf转换 在用log.Debug也不行 都会显示不出来。
-	// 其他位置显示正常，考虑是否是因为使用了go func的原因？
-	// logF可以输出。
-	Appw.DisplayInfo("Opening SerialPort...")
-	err := Appw.currentPort.OpenPort()
-	if err != nil {
-		Appw.DisplayInfo("\r\nSerialPort %v open failed.error:%v", Appw.currentPort.Config.Name)
-		Appw.btnOpenPort.SetText("打开串口")
-	} else {
-		Appw.DisplayInfo("\r\nSerialPort %v Opened.", Appw.currentPort.Config.Name)
-	}
-	//str:= fmt.Sprintf("%d,Port Open \r\n",5474)
-	//logrus.Debug(str)
-	//log.Debug(str)
-	//fmt.Print(str)
-	//log.Debugf("%d,Port Open \r\n",5474)
-	//log.Infof("%d,Port Open \r\n",5474)
-	//log.Warnf("%d,Port Open \r\nfun",5474)
-	//log.Debugln("Port Open ",config)
-	//logf.Debugf("%d,Port Open \r\n",5474)
-	//logf.Infof("%d,Port Open \r\n",5474)
-	//logf.Warnf("%d,Port Open \r\n",5474)
-	//logf.Debugln("Port Open ",config)
+    // 这里使用 log.Debugf的办法 会导致无法显示。很奇怪。
+    // 先用fmt.SPrintf转换 在用log.Debug也不行 都会显示不出来。
+    // 其他位置显示正常，考虑是否是因为使用了go func的原因？
+    // logF可以输出。
+    appw.DisplayInfoln("Opening SerialPort...")
+    err := appw.currentPort.OpenPort()
+    if err != nil {
+        appw.DisplayInfoln("SerialPort %v open failed.error:%v", appw.currentPort.Config.Name)
+        appw.btnOpenPort.SetText("打开串口")
+    } else {
+        appw.DisplayInfoln("SerialPort %s Opened.", appw.currentPort.Config.Name)
+    }
+    appw.btnFetchVersion.SetEnabled(true)
+    //str:= fmt.Sprintf("%d,Port Open \r\n",5474)
+    //logrus.Debug(str)
+    //log.Debug(str)
+    //fmt.Print(str)
+    //log.Debugf("%d,Port Open \r\n",5474)
+    //log.Infof("%d,Port Open \r\n",5474)
+    //log.Warnf("%d,Port Open \r\nfun",5474)
+    //log.Debugln("Port Open ",config)
+    //logf.Debugf("%d,Port Open \r\n",5474)
+    //logf.Infof("%d,Port Open \r\n",5474)
+    //logf.Warnf("%d,Port Open \r\n",5474)
+    //logf.Debugln("Port Open ",config)
 }
 
 //获取版本按键
 func btnFetchVersionClicked(btn *walk.PushButton) {
 
-	if btn.Text() == "获取版本" {
-		btn.SetText("停止获取版本")
-		startFetchVersion()
-	} else {
-		btn.SetText("获取版本")
-		stopFetchVersion()
-	}
+    if btn.Text() == "获取版本" {
+        startFetchVersion()
+    } else {
+        stopFetchVersion()
+    }
 
-	//start("COM1")
+    //start("COM1")
 }
 
+// 开始获取版本
 func startFetchVersion() {
-	Appw.DisplayInfo("\r\nStart Fetching Device Electric Version")
-	Appw.currentPort.StartHandle()
+    appw.btnFetchVersion.SetText("停止获取版本")
+    appw.DisplayInfoln("Start Fetching Device Electric Version")
+    //开始处理
+    appw.currentPort.StartHandle()
+
+    //tosend := []byte{0xAA, 0xAA,0, 0, 0, 0, 0xBB, 0xBB}
+    //var tosend []byte
+    for i := 7; i < 20; i++ {
+        tosend := make([]byte, i)
+        tosend[0] = 0xAA
+        tosend[1] = 0xAA
+        tosend[2] = 0xCC
+        tosend[3] = 0xCC
+        tosend[i-3] = 0x98
+        tosend[i-2] = 0xBB
+        tosend[i-1] = 0xBB
+        //n秒后
+        //time.AfterFunc(time.Duration(1000000000*(i-6)), func() {
+        //直接直接用 结果超了上限了。。
+        var timeElapse int64 =1000000000
+        timeElapse = timeElapse*(int64(i-6))
+        time.AfterFunc(time.Duration(timeElapse), func() {
+            appw.currentPort.SendChan <- tosend
+        })
+    }
+
 }
 
 func stopFetchVersion() {
-
+    appw.DisplayInfoln("Stop Fetching Device Electric Version")
+    appw.btnFetchVersion.SetText("获取版本")
 }
 
 //菜单open项
 func (appw *AppWindow) openAction_Triggered() {
-	log.Debug("Open Action Triggered!")
-	//walk.MsgBox(Appw, "Open", "Pretend to open a file...", walk.MsgBoxIconInformation)
+    log.Debug("Open Action Triggered!")
+    //walk.MsgBox(appw, "Open", "Pretend to open a file...", walk.MsgBoxIconInformation)
 }
 
 //菜单关于项
 func (appw *AppWindow) showAboutBoxAction_Triggered() {
-	walk.MsgBox(appw, "About", "Labthink Version Fetch Tool\r\nV1.0.0\r\nAuthor：Moses", walk.MsgBoxIconInformation)
+    walk.MsgBox(appw, "About", "Labthink Version Fetch Tool\r\nV1.0.0\r\nAuthor：Moses", walk.MsgBoxIconInformation)
 }
 
 //菜单，串口设置项
 func (appw *AppWindow) setupAction_Triggered() {
-	//Appw.config = serial.Config{
-	//    Name:     "COM1",
-	//    Baud:     9600,
-	//    Parity:   serial.ParityNone,
-	//    StopBits: serial.Stop1,
-	//}
-	if cmd, err := RunSerialPortSetDialog(appw, appw.currentPort.Config); err != nil {
-		log.Print(err)
-	} else if cmd == walk.DlgCmdOK {
-		appw.outPutTextEdit.AppendText(fmt.Sprintf("\r\n%+v", appw.currentPort.Config))
-	}
+    //appw.config = serial.Config{
+    //    Name:     "COM1",
+    //    Baud:     9600,
+    //    Parity:   serial.ParityNone,
+    //    StopBits: serial.Stop1,
+    //}
+    if cmd, err := RunSerialPortSetDialog(appw, appw.currentPort.Config); err != nil {
+        log.Print(err)
+    } else if cmd == walk.DlgCmdOK {
+        appw.DisplayInfoln("%+v", appw.currentPort.Config)
+    }
 }
 
 //动态添加例子
 func (appw *AppWindow) addRecentFileActions(texts ...string) {
-	for _, text := range texts {
-		a := walk.NewAction()
-		a.SetText(text)
-		a.Triggered().Attach(appw.openAction_Triggered)
-		appw.recentMenu.Actions().Add(a)
-	}
+    for _, text := range texts {
+        a := walk.NewAction()
+        a.SetText(text)
+        a.Triggered().Attach(appw.openAction_Triggered)
+        appw.recentMenu.Actions().Add(a)
+    }
+}
+
+func (appw *AppWindow) AppendOutputTextEdit(showstr string) {
+    appw.outPutTextEdit.AppendText(showstr)
+
+    logf.Info(color.BlueString(showstr))
 }
 
 //从界面中显示提示信息
 func (appw *AppWindow) DisplayInfo(format string, args ...interface{}) {
-	showstr := format
-	if len(args) != 0 {
-		showstr = fmt.Sprintf(format, args)
-	}
-	appw.outPutTextEdit.AppendText(showstr)
-	log.Debug(showstr)
+    showstr := format
+    if len(args) == 0 || args == nil {
+    } else {
+        showstr = fmt.Sprintf(format, args)
+
+    }
+    appw.AppendOutputTextEdit(showstr)
+
+}
+
+//从界面中显示提示信息
+func (appw *AppWindow) DisplayInfoln(format string, args ...interface{}) {
+
+    showstr := format
+    if len(args) != 0 {
+        showstr = fmt.Sprintf(format, args)
+    }
+    showstr = showstr + "\r\n"
+    appw.AppendOutputTextEdit(showstr)
+
 }
 
 func (appw *AppWindow) SetVersionShowLineEditText(str string) {
-	appw.versionShowLineEdit.SetText(str)
+    appw.versionShowLineEdit.SetText(str)
+}
+
+func (appw *AppWindow) subscribeMessageQuene() {
+    for msg := range mq.MQ.UiMsgQuene {
+        switch msg.ToUi {
+        case mq.VERSION_LINEEDIT_SETSTR:
+            appw.SetVersionShowLineEditText(msg.Msg)
+        case mq.OUTPUT_TEXTEDIT_APPEND:
+            appw.DisplayInfoln(msg.Msg)
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -366,7 +437,7 @@ var done = make(chan bool, 1)
 //
 //func start(PortNum string) {
 //    //serialPort := serialport.OpenPort(PortNum)
-//    //serialPort := Appw.currentPort.Port
+//    //serialPort := appw.currentPort.Port
 //    //serialPort := serial.Config{
 //    //    Name:PortNum
 //    //}

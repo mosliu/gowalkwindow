@@ -100,13 +100,13 @@ func (p *CommPort) StartSendChannel() {
 func (p *CommPort) StartRecvChannel() {
     //FIXME if port is nil?
     if p.IsOpen == false {
-        log.Debugf("Can Not Start Receive Channel For Close Port.")
+        log.Debug("Can Not Start Receive Channel For Close Port.")
         return
     }
     buf := make([]byte, 128)
     for {
         if p.IsOpen == false {
-            log.Debugf("Port closed. Stop receiving Serial Data.")
+            log.Debug("Port closed. Stop receiving Serial Data.")
             break
         }
         //buf := make([]byte, 128)

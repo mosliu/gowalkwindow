@@ -22,3 +22,7 @@ var MQ MessageQuene
 func InitMQ() {
 	MQ.UiMsgQuene = make(chan UIMSG)
 }
+
+func init() {
+	InitMQ()
+}

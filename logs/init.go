@@ -43,14 +43,15 @@ func initLogger(levelConsole string, levelFile string) {
 	Log.Formatter = &logrus.TextFormatter{ForceColors: true}
 	// then wrap the Log output with it
 	// 用于解决windows的terminal中彩色不正确的问题
-	Log.Out = ansicolor.NewAnsiColorWriter(os.Stdout)
+	colorWriter := ansicolor.NewAnsiColorWriter(os.Stdout)
+	Log.Out = colorWriter
 
 	//init LogF
 	fileLocation := "./logrus.Log"
 	file, err := os.OpenFile(fileLocation, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err == nil {
 		//设定双途径输出
-		LogF.SetOutput(io.MultiWriter(file, os.Stdout))
+		LogF.SetOutput(io.MultiWriter(file, colorWriter))
 		//LogF.Out = file
 	} else {
 		Log.Warn("Failed to Log to file, using default stderr")
@@ -63,6 +64,8 @@ func initLogger(levelConsole string, levelFile string) {
 	} else {
 		LogF.SetLevel(lvlFile)
 	}
+	Log.Info("Logger Component Initialized.")
+	//LogF.Info("Logger Component Initialized.")
 }
 
 func Assemble() {

@@ -10,7 +10,7 @@
 // assets/imgs/system-shutdown.png
 // DO NOT EDIT!
 
-package main
+package bind
 
 import (
 	"bytes"
@@ -287,14 +287,14 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"assets/icons/setport.ico":            assetsIconsSetportIco,
-	"assets/imgs/check.ico":               assetsImgsCheckIco,
-	"assets/imgs/document-new.png":        assetsImgsDocumentNewPng,
+	"assets/icons/setport.ico": assetsIconsSetportIco,
+	"assets/imgs/check.ico": assetsImgsCheckIco,
+	"assets/imgs/document-new.png": assetsImgsDocumentNewPng,
 	"assets/imgs/document-properties.png": assetsImgsDocumentPropertiesPng,
-	"assets/imgs/open.png":                assetsImgsOpenPng,
-	"assets/imgs/plus.png":                assetsImgsPlusPng,
-	"assets/imgs/stop.ico":                assetsImgsStopIco,
-	"assets/imgs/system-shutdown.png":     assetsImgsSystemShutdownPng,
+	"assets/imgs/open.png": assetsImgsOpenPng,
+	"assets/imgs/plus.png": assetsImgsPlusPng,
+	"assets/imgs/stop.ico": assetsImgsStopIco,
+	"assets/imgs/system-shutdown.png": assetsImgsSystemShutdownPng,
 }
 
 // AssetDir returns the file names below a certain
@@ -336,20 +336,19 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"assets": &bintree{nil, map[string]*bintree{
 		"icons": &bintree{nil, map[string]*bintree{
 			"setport.ico": &bintree{assetsIconsSetportIco, map[string]*bintree{}},
 		}},
 		"imgs": &bintree{nil, map[string]*bintree{
-			"check.ico":               &bintree{assetsImgsCheckIco, map[string]*bintree{}},
-			"document-new.png":        &bintree{assetsImgsDocumentNewPng, map[string]*bintree{}},
+			"check.ico": &bintree{assetsImgsCheckIco, map[string]*bintree{}},
+			"document-new.png": &bintree{assetsImgsDocumentNewPng, map[string]*bintree{}},
 			"document-properties.png": &bintree{assetsImgsDocumentPropertiesPng, map[string]*bintree{}},
-			"open.png":                &bintree{assetsImgsOpenPng, map[string]*bintree{}},
-			"plus.png":                &bintree{assetsImgsPlusPng, map[string]*bintree{}},
-			"stop.ico":                &bintree{assetsImgsStopIco, map[string]*bintree{}},
-			"system-shutdown.png":     &bintree{assetsImgsSystemShutdownPng, map[string]*bintree{}},
+			"open.png": &bintree{assetsImgsOpenPng, map[string]*bintree{}},
+			"plus.png": &bintree{assetsImgsPlusPng, map[string]*bintree{}},
+			"stop.ico": &bintree{assetsImgsStopIco, map[string]*bintree{}},
+			"system-shutdown.png": &bintree{assetsImgsSystemShutdownPng, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -400,3 +399,4 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+

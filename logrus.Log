@@ -1,2 +1,31 @@
 time="2018-10-09T16:35:42+08:00" level=info msg="5474,Port Open \r\n" pkg=ui
 time="2018-10-09T16:35:42+08:00" level=warning msg="5474,Port Open \r\n" pkg=ui
+time="2018-10-22T16:04:29+08:00" level=info msg="Logger Component Initialized."
+time="2018-10-22T16:05:35+08:00" level=info msg="Opening SerialPort...\r\n" pkg=ui
+time="2018-10-22T16:05:35+08:00" level=info msg="SerialPort [COM1] Opened.\r\n" pkg=ui
+time="2018-10-22T16:05:42+08:00" level=info msg="Start Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-22T16:05:44+08:00" level=info msg="Stop Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-22T16:05:45+08:00" level=info msg="Stop Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-22T16:05:45+08:00" level=info msg="Closing SerialPort...\r\n" pkg=ui
+time="2018-10-22T16:05:45+08:00" level=info msg="SerialPort [COM1] Closed.\r\n" pkg=ui
+time="2018-10-22T16:33:01+08:00" level=info msg="Opening SerialPort...\r\n" pkg=ui
+time="2018-10-22T16:33:01+08:00" level=info msg="SerialPort [COM1] Opened.\r\n" pkg=ui
+time="2018-10-22T16:33:02+08:00" level=info msg="Start Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-22T16:33:43+08:00" level=info msg="Opening SerialPort...\r\n" pkg=ui
+time="2018-10-22T16:33:44+08:00" level=info msg="SerialPort [COM1] Opened.\r\n" pkg=ui
+time="2018-10-22T16:33:45+08:00" level=info msg="Start Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-22T16:49:07+08:00" level=info msg="Stop Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-22T16:49:07+08:00" level=info msg="Start Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-23T08:45:17+08:00" level=info msg="%+v{assets/imgs/check.ico 1150 438 {0 63673615374 0x953c60}}" pkg=ui
+time="2018-10-23T09:36:19+08:00" level=info msg="Opening SerialPort...\r\n" pkg=ui
+time="2018-10-23T09:36:19+08:00" level=info msg="SerialPort [COM1] Opened.\r\n" pkg=ui
+time="2018-10-23T09:36:21+08:00" level=info msg="Start Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-24T10:31:27+08:00" level=info msg="\x1b[34mOpening SerialPort...\r\n\x1b[0m" pkg=ui
+time="2018-10-24T10:31:27+08:00" level=info msg="\x1b[34mSerialPort [COM1] Opened.\r\n\x1b[0m" pkg=ui
+time="2018-10-24T10:31:28+08:00" level=info msg="\x1b[34mStart Fetching Device Electric Version\r\n\x1b[0m" pkg=ui
+time="2018-10-24T10:36:28+08:00" level=info msg="Opening SerialPort...\r\n" pkg=ui
+time="2018-10-24T10:36:28+08:00" level=info msg="SerialPort [COM1] Opened.\r\n" pkg=ui
+time="2018-10-24T10:36:28+08:00" level=info msg="Start Fetching Device Electric Version\r\n" pkg=ui
+time="2018-10-24T10:37:25+08:00" level=info msg="\x1b[34mOpening SerialPort...\r\n\x1b[0m" pkg=ui
+time="2018-10-24T10:37:26+08:00" level=info msg="\x1b[34mSerialPort [COM1] Opened.\r\n\x1b[0m" pkg=ui
+time="2018-10-24T10:37:26+08:00" level=info msg="\x1b[34mStart Fetching Device Electric Version\r\n\x1b[0m" pkg=ui
