@@ -43,6 +43,7 @@ func ShowMainApp() {
     var btn *walk.PushButton
     //菜单项
     var openAction, showAboutBoxAction, setupAction *walk.Action
+    var deviceV2Action *walk.Action
     //var recentMenu *walk.Menu
 
     //图标
@@ -124,6 +125,16 @@ func ShowMainApp() {
                         AssignTo:    &setupAction,
                         Text:        "Setup",
                         OnTriggered: appw.setupAction_Triggered,
+                    },
+                },
+            },
+            Menu{
+                Text: "&DeviceFuncs",
+                Items: []MenuItem{
+                    Action{
+                        AssignTo:    &deviceV2Action,
+                        Text:        "VAC-V2 Valve Control",
+                        OnTriggered: appw.deviceV2Action_Triggered,
                     },
                 },
             },
@@ -371,6 +382,14 @@ func (appw *AppWindow) setupAction_Triggered() {
         log.Print(err)
     } else if cmd == walk.DlgCmdOK {
         appw.DisplayInfoln("%+v", appw.currentPort.Config)
+    }
+}
+//菜单，串口设置项
+func (appw *AppWindow) deviceV2Action_Triggered() {
+    if cmd, err := VACV2ValvesControlDialog(appw); err != nil {
+        log.Print(err)
+    } else if cmd == walk.DlgCmdOK {
+        appw.DisplayInfoln("close v2 window")
     }
 }
 
