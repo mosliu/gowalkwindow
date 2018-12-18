@@ -144,11 +144,13 @@ func (p *CommPort) prepareHandlerQuene() {
     //p.addHandler(&SimplePrintHandler{})
     //p.addHandler(NewSimplePrintHandler())
     p.addHandler(NewVacV1Handler())
+    p.addHandler(NewVacV2Handler())
 }
 
 //adds a handler to the queue
 func (p *CommPort) addHandler(handler Handler) {
     p.handlers = append(p.handlers, handler)
+    log.Debugf("Handler %s ready to handle data.",handler.GetName() )
 }
 
 // Unsubscribe removes a handler.

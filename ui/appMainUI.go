@@ -54,7 +54,6 @@ func ShowMainApp() {
     // 释放所有打包文件到临时文件夹中
     bind.ExtractCurr()
 
-
     //icon1, err := walk.NewIconFromFile(filepath.Join(tempdir, "assets/imgs/check.ico"))
     icon1, err := walk.NewIconFromFile(bind.GetTempFilePath("assets/imgs/check.ico"))
     if err != nil {
@@ -98,7 +97,7 @@ func ShowMainApp() {
                     Action{
                         AssignTo: &openAction,
                         Text:     "&Open",
-                        Image:       "rsrc/assets/imgs/open.png",
+                        Image:    "rsrc/assets/imgs/open.png",
                         //Image:       "./assets/imgs/open.png",
                         Enabled:     Bind("enabledCB.Checked"),
                         Visible:     Bind("!openHiddenCB.Checked"),
@@ -345,8 +344,8 @@ func startFetchVersion() {
         //n秒后
         //time.AfterFunc(time.Duration(1000000000*(i-6)), func() {
         //直接直接用 结果超了上限了。。
-        var timeElapse int64 =1000000000
-        timeElapse = timeElapse*(int64(i-6))
+        var timeElapse int64 = 1000000000
+        timeElapse = timeElapse * (int64(i - 6))
         time.AfterFunc(time.Duration(timeElapse), func() {
             appw.currentPort.SendChan <- tosend
         })
@@ -384,6 +383,7 @@ func (appw *AppWindow) setupAction_Triggered() {
         appw.DisplayInfoln("%+v", appw.currentPort.Config)
     }
 }
+
 //菜单，串口设置项
 func (appw *AppWindow) deviceV2Action_Triggered() {
     if cmd, err := VACV2ValvesControlDialog(appw); err != nil {
